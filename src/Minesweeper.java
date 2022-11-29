@@ -13,6 +13,9 @@ public class Minesweeper extends JFrame implements MouseListener{
 	static int mine_crosswise=10,mine_vertical=10;//Initialize minefield to 10*10
 	static int mine_num=10;//Initialize number of mine
 	static int sign_num=0;//Initialize number of flag
+	static double score1=200;//Initialize the basic score for Player1
+	static int numofclick=0;
+	static double score2=200;//Initialize the basic score for Player2
 	static int [][]mine = new int [mine_crosswise][mine_vertical];//Save mine's location
 	static int [][]mine1=new int [mine_crosswise][mine_vertical];//show the data
 	int [][] sign=new int [mine_crosswise][mine_vertical];//save flag location
@@ -43,15 +46,19 @@ public class Minesweeper extends JFrame implements MouseListener{
 		Graphics g2 = bi.createGraphics();
 		//number of rest mine
 		g2.setColor(Color.red);
-		g2.setFont(new Font("Meiryo",10,30));
-		g2.drawString("Mine: "+mine_num,50,80);
+		g2.setFont(new Font("Meiryo",8,20));
+		g2.drawString("Mine: "+mine_num,20,80);
 		
 		g2.setColor(Color.red);
-		g2.setFont(new Font("Meiryo",10,30));
-		g2.drawString("Time: unlimited ",window_width - 200, 80);
+		g2.setFont(new Font("Meiryo",8,20));
+		g2.drawString("SCOREP1: "+score1,window_width -370, 80);
+		
+		g2.setColor(Color.red);
+		g2.setFont(new Font("Meiryo",8,20));
+		g2.drawString("SCOREP2: "+score2,window_width - 200, 80);
 		
 		again();
-		g2.drawImage(image,(window_width - 50)/2,45,this);
+		g2.drawImage(image,(window_width - 50)/4,45,this);
 		/*
 		 Draw minefields, generate minefields cyclically according to the initialized minefield value, 
 		 1 to 8 :display the number of surrounding minefields
@@ -721,6 +728,7 @@ jump out of the loop and re-randomize
 		// TODO Auto-generated method stub
 		int x=e.getX();
 		int y=e.getY();
+		
 		// judge if the game is start
 		if(judge==0) {
 			//judge if the potion of mouse click is in the minefield
@@ -729,6 +737,7 @@ jump out of the loop and re-randomize
 				y=(y-110)/50;
 				//Determine how the mouse is .Button1:left, Button2:middle,Button3:right;
 				if(e.getButton()==MouseEvent.BUTTON1) {
+					numofclick++;
 					//Left button means flip
 					//judge the click potion is legitimate
 					if(sign[x][y]==0&&uncertainty[x][y]==0) {
@@ -741,7 +750,11 @@ jump out of the loop and re-randomize
 						}else if(mine[x][y]==9) {
 							judge=2;
 							this.repaint();
-							JOptionPane.showMessageDialog(this,"BOOM");
+							if(numofclick%2==1) {
+								score1-=20;
+							JOptionPane.showMessageDialog(this,"person1: BOOM");}
+							else {score2-=20;
+							JOptionPane.showMessageDialog(this,"person2:BOOM");}
 						}
 						int num=0;//Count how many squares are left not fliped
 						for(int i=0;i<mine_crosswise;i++) {
@@ -754,11 +767,17 @@ jump out of the loop and re-randomize
 						if(num==0) {
 							judge=1;
 							this.repaint();
-							JOptionPane.showMessageDialog(this,"Wonderfu;");
+							if(numofclick%2==1) {
+								score1+=20;
+							JOptionPane.showMessageDialog(this,"Wonderful, Person1: wins;");}
+							else {score2+=20;
+							JOptionPane.showMessageDialog(this,"Wonderful, Person2: wins;");}
+							
 						}
 					}
 				}
 				else if(e.getButton()==MouseEvent.BUTTON2) {
+					numofclick++;
 					//middle means question mark
 					if(uncertainty[x][y]==0&&sign[x][y]==0) {
 						uncertainty[x][y]=1;
@@ -768,6 +787,7 @@ jump out of the loop and re-randomize
 					}
 					this.repaint();
 				}else if(e.getButton()==MouseEvent.BUTTON3) {
+					numofclick++;
 					//right click means flag mark
 					if(sign[x][y]==0&&sign_num<mine_num&&uncertainty[x][y]==0) {
 						sign[x][y]=1;
@@ -780,6 +800,7 @@ jump out of the loop and re-randomize
 				}
 				
 			}
+
 			//restart button
 			if(x>=(window_width-50)/2 && y>=45 && x<=(window_width-50)/2 +50 && y<=45 +50) {
 				//reset all data
